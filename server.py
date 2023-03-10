@@ -1,4 +1,4 @@
-import socket, sys
+import socket
 from ClientThread import ClientThread
 
 
