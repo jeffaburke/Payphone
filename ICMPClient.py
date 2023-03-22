@@ -12,7 +12,7 @@ from time import sleep
 def sniffHandle(packet) -> None:
     """Gets called every time a packet from the sniffer is sent, as of right now it prints the payload of the packet"""
     payload = packet.payload
-    print(payload)
+    print(payload.split("@")[1])
 
 
 def sniffer() -> None:
