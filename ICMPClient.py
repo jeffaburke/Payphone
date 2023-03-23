@@ -16,7 +16,7 @@ def sniffHandle(packet: Packet) -> None:
 
 def sniffer() -> None:
     """Starts an asynchronus sniffer then allows for the program to be interrupted"""
-    sniffer = AsyncSniffer(filter="icmp", prn=sniffHandle)
+    sniffer = AsyncSniffer(filter="icmp[icmptype]=8", prn=sniffHandle)
 
     print("[*] Start sniffing...")
     sniffer.start()

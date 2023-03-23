@@ -9,12 +9,12 @@
 from scapy.all import *
 from scapy.layers.inet import IP, ICMP
 
-target = "0.0.0.0"
+target = "0.0.0.0"  # this is a default value
 
 
 def makeICMPPacket(command):
     global target
-    toBeSent = IP(dst=target) / ICMP(type=0) / command
+    toBeSent = IP(dst=target) / ICMP(type=8) / command
     send(toBeSent, verbose=False)
 
 
