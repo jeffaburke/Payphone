@@ -11,7 +11,14 @@ from time import sleep
 
 def sniffHandle(packet: Packet) -> None:
     """Gets called every time a packet from the sniffer is sent, as of right now it prints the payload of the packet"""
-    print(packet[3].load.decode())
+    try:
+        decodedCommand = packet[3].load.decode()
+        print(decodedCommand)
+
+        if decodedCommand == "kill":
+            raise Exception("Programmed killed by server")
+    except UnicodeDecodeError:
+        print("Oh well")
 
 
 def sniffer() -> None:
