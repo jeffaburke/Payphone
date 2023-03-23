@@ -15,7 +15,7 @@ target = "0.0.0.0"
 def makeICMPPacket(command):
     global target
     toBeSent = IP(dst=target) / ICMP(type=0) / command
-    send(toBeSent)
+    send(toBeSent, verbose=False)
 
 
 # start program
