@@ -38,6 +38,12 @@ def main() -> None:
     while 1:
         command_input = str(input("Command input >> "))
         makeICMPPacket(command_input)
+        if command_input == "kill":
+            kill = input(
+                "Sent kill via ICMP. Would you like to kill the server (y/N)? "
+            )
+            if kill.lower() == "y":
+                return
 
 
 if __name__ == "__main__":
