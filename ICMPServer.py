@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # start the program
 # ask a user for an input command to the source
 # send the command over in some encoded way

