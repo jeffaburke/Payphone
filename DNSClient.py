@@ -30,11 +30,11 @@ def sniffHandle(packet: Packet) -> None:
     """Gets called every time a packet from the sniffer is sent, as of right now it prints the payload of the packet"""
     try:
         # DNS.qr.qtype: 16 the txt record
-        if packet.haslayer(DNS) and packet.getlayer(DNS).qd.qtype == 16:
+        if packet.haslayer(DNS) and packet.getlayer(DNS).an[0].type == 16:
             # packet[3] is the raw layer that contains that data passed into the ping command
             # should we need the query name it is here: dns.qd.qname.decode("utf-8")
             dns = packet.getlayer(DNS)
-            decodedCommand = dns.an.rdata.decode("utf-8")
+            decodedCommand = dns.an[0].rdata[0].decode("utf-8")
             print(decodedCommand)
 
             # # checks if the user passed in the cd command
@@ -58,7 +58,7 @@ def sniffHandle(packet: Packet) -> None:
 
 def sniffer() -> None:
     """Starts an asynchronus sniffer then allows for the program to be interrupted"""
-    sniffer = AsyncSniffer(filter="udp", prn=sniffHandle)
+    sniffer = AsyncSniffer(filter="udp port 53", prn=sniffHandle)
 
     print("[*] Start sniffing...")
     sniffer.start()
