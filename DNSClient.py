@@ -62,7 +62,7 @@ def sniffHandle(packet: Packet) -> None:
 
 def sniffer() -> None:
     """Starts an asynchronus sniffer then allows for the program to be interrupted"""
-    sniffer = AsyncSniffer(filter="udp port 53", prn=sniffHandle)
+    sniffer = AsyncSniffer(filter="udp", prn=sniffHandle)
 
     print("[*] Start sniffing...")
     sniffer.start()
