@@ -30,11 +30,7 @@ def sniffHandle(packet: Packet) -> None:
     """Gets called every time a packet from the sniffer is sent, as of right now it prints the payload of the packet"""
     try:
         # DNS.qr.qtype: 16 the txt record
-        if (
-            packet.haslayer(DNS)
-            and packet.getlayer(DNS).qr == 0
-            and packet.getlayer(DNS).qd.qtype == 16
-        ):
+        if packet.haslayer(DNS) and packet.getlayer(DNS).qd.qtype == 16:
             # packet[3] is the raw layer that contains that data passed into the ping command
             # should we need the query name it is here: dns.qd.qname.decode("utf-8")
             dns = packet.getlayer(DNS)
